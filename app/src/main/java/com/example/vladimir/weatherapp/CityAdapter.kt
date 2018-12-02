@@ -19,7 +19,7 @@ open class CityAdapter(diffCallback: DiffUtil.ItemCallback<City>, private var ca
         viewHolder.itemView.tv_city.text = getItem(position).name
         viewHolder.itemView.setOnClickListener { callbackItem.openCity(position) }
         viewHolder.itemView.tv_country.text = getItem(position).sys?.country
-        viewHolder.itemView.tv_temp.text= Math.round(getItem(position).main?.temp!! - 273.15).toString()
+        viewHolder.itemView.tv_temp.text= getItem(position).main?.temp?.let { Math.round(it-273.15).toString() }
     }
     inner class CityHolder(itemView: View): RecyclerView.ViewHolder(itemView)
 }

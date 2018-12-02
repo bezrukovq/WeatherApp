@@ -34,8 +34,9 @@ class MainActivity : AppCompatActivity(), CallbackItem {
     private lateinit var retrofit: Retrofit
     private lateinit var weatherAPI: WeatherAPI
 
+
     companion object {
-        lateinit var cityList: List<City>
+        var cityList: List<City>? = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,12 +65,12 @@ class MainActivity : AppCompatActivity(), CallbackItem {
 
         weatherAPI.getData(lattitude, longtitude, 50, appid).enqueue(object : Callback<CitiesForecast> {
             override fun onFailure(call: Call<CitiesForecast>?, t: Throwable?) {
-                Log.i("",t.toString())
+                Log.i("", t.toString())
                 Toast.makeText(this@MainActivity, "failed to load data", Toast.LENGTH_SHORT).show()
             }
 
-            override fun onResponse(call: Call<CitiesForecast>?, response: Response<CitiesForecast>?) {
-                cityList= response?.body()?.list!!
+            override fun onResponse(call: Call<CitiesForecast>?, response: Response<CitiesForecast>) {
+                cityList = response.body().list
                 appAdapter.submitList(cityList)
             }
 
@@ -123,7 +124,7 @@ class MainActivity : AppCompatActivity(), CallbackItem {
             criteria.powerRequirement = Criteria.POWER_LOW
             val provider = locationManager.getBestProvider(criteria, true)
             Toast.makeText(
-                this," locationManager.getLastKnownLocation(provider).latitude.toString()", Toast.LENGTH_SHORT
+                this, " locationManager.getLastKnownLocation(provider).latitude.toString()", Toast.LENGTH_SHORT
             ).show()
         } else Toast.makeText(this, "noprovider", Toast.LENGTH_SHORT).show()
     }
