@@ -14,6 +14,7 @@ class CityActivity: AppCompatActivity() {
         tv_temp.text= MainActivity.cityList?.get(id)?.main?.temp?.let { Math.round(it-273.15).toString() }
         tv_wet.text="${tv_wet.text} ${MainActivity.cityList?.get(id)?.main?.humidity}"
         tv_pressure.text="${tv_pressure.text} ${MainActivity.cityList?.get(id)?.main?.pressure}"
-      //  tv_wdir.text="${tv_wdir.text} ${MainActivity.cityList[id].windDirection}"
+      //  tv_wdir.text="${tv_wdir.text} ${MainActivity.cityList?.get(id)?....windDirection}"
+        //winddirection в запросе не приходит
     }
 }

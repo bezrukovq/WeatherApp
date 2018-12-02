@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Criteria
+import android.location.Location
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
@@ -16,6 +17,8 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
 import com.example.vladimir.weatherapp.entities.City
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -30,7 +33,7 @@ class MainActivity : AppCompatActivity(), CallbackItem {
     private var longtitude: Double = 49.1221
     private var lattitude: Double = 55.7887
     private lateinit var appAdapter: CityAdapter
-    private lateinit var locationManager: LocationManager
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var retrofit: Retrofit
     private lateinit var weatherAPI: WeatherAPI
 
@@ -42,7 +45,7 @@ class MainActivity : AppCompatActivity(), CallbackItem {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         if (ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -61,8 +64,16 @@ class MainActivity : AppCompatActivity(), CallbackItem {
         weatherAPI = retrofit.create(WeatherAPI::class.java)
         appAdapter = CityAdapter(CityListDiffCallback(), this)
         rv_cities.adapter = appAdapter
+        getData()
+    }
 
+    override fun openCity(position: Int) {
+        val intent = Intent(this, CityActivity::class.java)
+        intent.putExtra("id", position)
+        startActivity(intent)
+    }
 
+    fun getData() {
         weatherAPI.getData(lattitude, longtitude, 50, appid).enqueue(object : Callback<CitiesForecast> {
             override fun onFailure(call: Call<CitiesForecast>?, t: Throwable?) {
                 Log.i("", t.toString())
@@ -73,16 +84,7 @@ class MainActivity : AppCompatActivity(), CallbackItem {
                 cityList = response.body().list
                 appAdapter.submitList(cityList)
             }
-
         })
-
-
-    }
-
-    override fun openCity(position: Int) {
-        val intent = Intent(this, CityActivity::class.java)
-        intent.putExtra("id", position)
-        startActivity(intent)
     }
 
     fun requestPermissionWithRationale() {
@@ -108,24 +110,21 @@ class MainActivity : AppCompatActivity(), CallbackItem {
         when (requestCode) {
             123 -> allowed = grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED
         }
-        if (allowed) getCitiesWithGeo() else requestPermissionWithRationale()
+        if (allowed) getCitiesWithGeo()
     }
 
     @SuppressLint("MissingPermission")
     fun getCitiesWithGeo() {
-        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
-            locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-        ) {
-            val criteria = Criteria()
-            criteria.accuracy = Criteria.ACCURACY_FINE
-            criteria.isAltitudeRequired = false
-            criteria.isBearingRequired = false
-            criteria.isCostAllowed = true
-            criteria.powerRequirement = Criteria.POWER_LOW
-            val provider = locationManager.getBestProvider(criteria, true)
-            Toast.makeText(
-                this, " locationManager.getLastKnownLocation(provider).latitude.toString()", Toast.LENGTH_SHORT
-            ).show()
-        } else Toast.makeText(this, "noprovider", Toast.LENGTH_SHORT).show()
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location: Location? ->
+                if (location != null) {
+                    lattitude = location.latitude
+                    longtitude = location.longitude
+                    getData()
+                    Toast.makeText(this, "Cities by your location", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "Failed to get Location. Current set to KAZAN", Toast.LENGTH_LONG).show()
+                }
+            }
     }
 }

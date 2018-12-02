@@ -1,6 +1,5 @@
 package com.example.vladimir.weatherapp.entities
 
-import com.example.vladimir.weatherapp.CitiesForecast
 import com.google.gson.annotations.SerializedName
 
 data class City(
@@ -12,6 +11,4 @@ data class City(
     var main: WeatherTemp? = null,
     @SerializedName("wind")
     var wind: Wind? = null
-) {
-
-}
+)
