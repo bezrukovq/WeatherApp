@@ -15,6 +15,7 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
+import com.example.vladimir.weatherapp.entities.City
 import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -34,7 +35,7 @@ class MainActivity : AppCompatActivity(), CallbackItem {
     private lateinit var weatherAPI: WeatherAPI
 
     companion object {
-        lateinit var cityList: List<CitiesForecast.City>
+        lateinit var cityList: List<City>
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -122,8 +123,7 @@ class MainActivity : AppCompatActivity(), CallbackItem {
             criteria.powerRequirement = Criteria.POWER_LOW
             val provider = locationManager.getBestProvider(criteria, true)
             Toast.makeText(
-                this,
-                locationManager.getLastKnownLocation(provider).latitude.toString(), Toast.LENGTH_SHORT
+                this," locationManager.getLastKnownLocation(provider).latitude.toString()", Toast.LENGTH_SHORT
             ).show()
         } else Toast.makeText(this, "noprovider", Toast.LENGTH_SHORT).show()
     }

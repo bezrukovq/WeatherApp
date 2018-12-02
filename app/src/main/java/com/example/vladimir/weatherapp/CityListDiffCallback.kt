@@ -1,9 +1,10 @@
 package com.example.vladimir.weatherapp
 
 import android.support.v7.util.DiffUtil
+import com.example.vladimir.weatherapp.entities.City
 
-class CityListDiffCallback : DiffUtil.ItemCallback<CitiesForecast.City>(){
-    override fun areItemsTheSame(old: CitiesForecast.City, new: CitiesForecast.City): Boolean = old.name.equals(new.name)
+class CityListDiffCallback : DiffUtil.ItemCallback<City>(){
+    override fun areItemsTheSame(old: City, new: City): Boolean = old.name.equals(new.name)
 
-    override fun areContentsTheSame(old: CitiesForecast.City, new: CitiesForecast.City): Boolean = old.main?.temp==new.main?.temp
+    override fun areContentsTheSame(old: City, new: City): Boolean = old.main?.temp==new.main?.temp
 }

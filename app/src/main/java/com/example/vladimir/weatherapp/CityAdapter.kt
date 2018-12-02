@@ -6,9 +6,10 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.example.vladimir.weatherapp.entities.City
 import kotlinx.android.synthetic.main.item_view.view.*
 
-open class CityAdapter(diffCallback: DiffUtil.ItemCallback<CitiesForecast.City>, private var callbackItem: CallbackItem) : ListAdapter<CitiesForecast.City, CityAdapter.CityHolder>(diffCallback){
+open class CityAdapter(diffCallback: DiffUtil.ItemCallback<City>, private var callbackItem: CallbackItem) : ListAdapter<City, CityAdapter.CityHolder>(diffCallback){
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CityHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_view, parent, false)
