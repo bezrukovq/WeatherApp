@@ -26,21 +26,13 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-
 class MainActivity : AppCompatActivity(), CallbackItem {
 
-    private val appid: String = "56fc6c6cb76c0864b4cd055080568268"
     private var longtitude: Double = 49.1221
     private var lattitude: Double = 55.7887
     private lateinit var appAdapter: CityAdapter
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var retrofit: Retrofit
     private lateinit var weatherAPI: WeatherAPI
-
-
-    companion object {
-        var cityList: List<City>? = null
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,10 +49,6 @@ class MainActivity : AppCompatActivity(), CallbackItem {
         } else {
             getCitiesWithGeo()
         }
-        retrofit = Retrofit.Builder()
-            .baseUrl("http://api.openweathermap.org/data/2.5/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
         weatherAPI = retrofit.create(WeatherAPI::class.java)
         appAdapter = CityAdapter(CityListDiffCallback(), this)
         rv_cities.adapter = appAdapter
@@ -126,5 +114,14 @@ class MainActivity : AppCompatActivity(), CallbackItem {
                     Toast.makeText(this, "Failed to get Location. Current set to KAZAN", Toast.LENGTH_LONG).show()
                 }
             }
+    }
+
+    companion object {
+        var cityList: List<City>? = null
+        private const val appid: String = "56fc6c6cb76c0864b4cd055080568268"
+        private val retrofit = Retrofit.Builder()
+            .baseUrl("http://api.openweathermap.org/data/2.5/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
     }
 }
