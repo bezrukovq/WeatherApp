@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity(), CallbackItem {
 
             override fun onResponse(call: Call<CitiesForecast>?, response: Response<CitiesForecast>) {
                 db.cityDao().deleteAll()
-                db.cityDao().insertCities(response.body().list!!)
+                response.body().list?.let { db.cityDao().insertCities(it) }
                 cityList = response.body().list
                 appAdapter.submitList(cityList)
             }

@@ -7,7 +7,6 @@ import android.arch.persistence.room.PrimaryKey
 @Entity(tableName = "weather_temp")
 data class WeatherTemp(
     @PrimaryKey var id: Int,
-
     @ColumnInfo(name = "temp")
     var temp: Double? = null,
     @ColumnInfo(name = "pressure")
