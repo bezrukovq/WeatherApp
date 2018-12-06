@@ -19,6 +19,7 @@ import android.widget.Toast
 import com.example.vladimir.weatherapp.entities.City
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -57,7 +58,7 @@ class MainActivity : AppCompatActivity(), CallbackItem {
 
     override fun openCity(position: Int) {
         val intent = Intent(this, CityActivity::class.java)
-        intent.putExtra("id", position)
+        intent.putExtra("city", Gson().toJson(cityList?.get(position)))
         startActivity(intent)
     }
 
