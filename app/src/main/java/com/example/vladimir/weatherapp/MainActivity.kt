@@ -2,12 +2,9 @@ package com.example.vladimir.weatherapp
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Criteria
 import android.location.Location
-import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -45,7 +42,7 @@ class MainActivity : AppCompatActivity(), CallbackItem {
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             // Permission is not granted
-            Toast.makeText(this, "not granted", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.per_ngranted), Toast.LENGTH_SHORT).show()
             requestPermissionWithRationale()
         } else {
             getCitiesWithGeo()
@@ -66,7 +63,7 @@ class MainActivity : AppCompatActivity(), CallbackItem {
         weatherAPI.getData(lattitude, longtitude, 50, appid).enqueue(object : Callback<CitiesForecast> {
             override fun onFailure(call: Call<CitiesForecast>?, t: Throwable?) {
                 Log.i("", t.toString())
-                Toast.makeText(this@MainActivity, "failed to load data", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, getString(R.string.load_error), Toast.LENGTH_SHORT).show()
             }
 
             override fun onResponse(call: Call<CitiesForecast>?, response: Response<CitiesForecast>) {
@@ -78,9 +75,9 @@ class MainActivity : AppCompatActivity(), CallbackItem {
 
     fun requestPermissionWithRationale() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-            val message = "NO"
+            val message = getString(R.string.no)
             Snackbar.make(container, message, Snackbar.LENGTH_LONG)
-                .setAction("Allow", { v -> requestPerms() })
+                .setAction(getString(R.string.allow), { v -> requestPerms() })
                 .show()
         } else {
             requestPerms()
@@ -110,9 +107,9 @@ class MainActivity : AppCompatActivity(), CallbackItem {
                     lattitude = location.latitude
                     longtitude = location.longitude
                     getData()
-                    Toast.makeText(this, "Cities by your location", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.cities_by_location), Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(this, "Failed to get Location. Current set to KAZAN", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, getString(R.string.failed_location), Toast.LENGTH_LONG).show()
                 }
             }
     }
