@@ -2,12 +2,10 @@ package com.example.vladimir.weatherapp
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
+import android.arch.persistence.room.Room
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Criteria
 import android.location.Location
-import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -34,10 +32,16 @@ class MainActivity : AppCompatActivity(), CallbackItem {
     private lateinit var appAdapter: CityAdapter
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var weatherAPI: WeatherAPI
+    private lateinit var db : AppDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+            db = Room.databaseBuilder(
+                this.applicationContext,
+                AppDatabase::class.java, "database-name"
+            ).allowMainThreadQueries()
+                .build()
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         if (ContextCompat.checkSelfPermission(
                 this,
@@ -62,25 +66,29 @@ class MainActivity : AppCompatActivity(), CallbackItem {
         startActivity(intent)
     }
 
-    fun getData() {
+    private fun getData() {
         weatherAPI.getData(lattitude, longtitude, 50, appid).enqueue(object : Callback<CitiesForecast> {
             override fun onFailure(call: Call<CitiesForecast>?, t: Throwable?) {
+                cityList =db.cityDao().getAll()
+                appAdapter.submitList(cityList)
                 Log.i("", t.toString())
                 Toast.makeText(this@MainActivity, "failed to load data", Toast.LENGTH_SHORT).show()
             }
 
             override fun onResponse(call: Call<CitiesForecast>?, response: Response<CitiesForecast>) {
+                db.cityDao().deleteAll()
+                response.body().list?.let { db.cityDao().insertCities(it) }
                 cityList = response.body().list
                 appAdapter.submitList(cityList)
             }
         })
     }
 
-    fun requestPermissionWithRationale() {
+    private fun requestPermissionWithRationale() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
             val message = "NO"
             Snackbar.make(container, message, Snackbar.LENGTH_LONG)
-                .setAction("Allow", { v -> requestPerms() })
+                .setAction("Allow") { requestPerms() }
                 .show()
         } else {
             requestPerms()
@@ -95,9 +103,9 @@ class MainActivity : AppCompatActivity(), CallbackItem {
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        var allowed = false;
+        var allowed = false
         when (requestCode) {
-            123 -> allowed = grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED
+            123 -> allowed = grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
         }
         if (allowed) getCitiesWithGeo()
     }
