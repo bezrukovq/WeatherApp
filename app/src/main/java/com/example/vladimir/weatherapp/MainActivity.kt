@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity(), CallbackItem {
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             // Permission is not granted
-            Toast.makeText(this, "not granted", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.per_ngranted), Toast.LENGTH_SHORT).show()
             requestPermissionWithRationale()
         } else {
             getCitiesWithGeo()
@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity(), CallbackItem {
                 cityList =db.cityDao().getAll()
                 appAdapter.submitList(cityList)
                 Log.i("", t.toString())
-                Toast.makeText(this@MainActivity, "failed to load data", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, getString(R.string.load_error), Toast.LENGTH_SHORT).show()
             }
 
             override fun onResponse(call: Call<CitiesForecast>?, response: Response<CitiesForecast>) {
@@ -86,9 +86,9 @@ class MainActivity : AppCompatActivity(), CallbackItem {
 
     private fun requestPermissionWithRationale() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-            val message = "NO"
+            val message = getString(R.string.no)
             Snackbar.make(container, message, Snackbar.LENGTH_LONG)
-                .setAction("Allow") { requestPerms() }
+                .setAction(getString(R.string.allow)) { requestPerms() }
                 .show()
         } else {
             requestPerms()
@@ -118,9 +118,9 @@ class MainActivity : AppCompatActivity(), CallbackItem {
                     lattitude = location.latitude
                     longtitude = location.longitude
                     getData()
-                    Toast.makeText(this, "Cities by your location", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, getString(R.string.cities_by_location), Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(this, "Failed to get Location. Current set to KAZAN", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, getString(R.string.failed_location), Toast.LENGTH_LONG).show()
                 }
             }
     }

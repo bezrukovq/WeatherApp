@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Погода Приложение</string>
+    <string name="wet">Влага</string>
+    <string name="wind_direction">Ветер Направление</string>
+    <string name="pressure">Давит</string>
+    <string name="load_error">Ошибка загрузки данных</string>
+    <string name="per_ngranted">нет разрешения на геопозицию</string>
+    <string name="allow">Разрешить</string>
+    <string name="no">нет</string>
+    <string name="cities_by_location">города по вашей локации</string>
+    <string name="failed_location">ошибка получения локации. загружено для Казани</string>
+</resources>
