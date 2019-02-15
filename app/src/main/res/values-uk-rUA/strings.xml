@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Пiгiда Прiложення</string>
+    <string name="wind_direction">Вiтир</string>
+    <string name="wet">Влаха</string>
+    <string name="pressure">Увага</string>
+    <string name="load_error">помилка завантаження даних</string>
+    <string name="per_ngranted">немає дозволу на геопозіцію</string>
+    <string name="allow">дозволити</string>
+    <string name="no">нiт</string>
+    <string name="cities_by_location">міста по вашій локації</string>
+    <string name="failed_location">помилка отримання локації. завантажено для Казані</string>
+</resources>

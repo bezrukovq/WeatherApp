@@ -74,6 +74,8 @@ class MainActivity : AppCompatActivity(), CallbackItem {
         weatherAPI.getData(lattitude, longtitude, 50, appid).enqueue(object : Callback<CitiesForecast> {
             @SuppressLint("CheckResult")
             override fun onFailure(call: Call<CitiesForecast>?, t: Throwable?) {
+                Log.i("", t.toString())
+                Toast.makeText(this@MainActivity, getString(R.string.load_error), Toast.LENGTH_SHORT).show()
                 cityRepository.getCities().subscribeBy(onSuccess = {
                     cityList = it
                     appAdapter.submitList(it)
