@@ -1,3 +1,9 @@
 package com.example.vladimir.weatherapp.entities
 
-data class Sys(var country: String? = null)
+import android.arch.persistence.room.ColumnInfo
+import android.arch.persistence.room.Entity
+import android.arch.persistence.room.PrimaryKey
+
+@Entity(tableName = "sys")
+data class Sys(@PrimaryKey var id: Int,
+               @ColumnInfo(name = "country")var country: String? = null)

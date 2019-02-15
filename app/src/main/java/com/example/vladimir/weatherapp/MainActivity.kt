@@ -2,6 +2,7 @@ package com.example.vladimir.weatherapp
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.arch.persistence.room.Room
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
@@ -13,16 +14,19 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
+import com.example.vladimir.weatherapp.DAO.CityRepository
 import com.example.vladimir.weatherapp.entities.City
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.gson.Gson
+import io.reactivex.rxkotlin.subscribeBy
 import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+
 
 class MainActivity : AppCompatActivity(), CallbackItem {
 
@@ -31,10 +35,17 @@ class MainActivity : AppCompatActivity(), CallbackItem {
     private lateinit var appAdapter: CityAdapter
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var weatherAPI: WeatherAPI
-
+    private lateinit var db: AppDatabase
+    private lateinit var cityRepository: CityRepository
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        db = Room.databaseBuilder(
+            this.applicationContext,
+            AppDatabase::class.java, "database-name"
+        )
+            .build()
+        cityRepository = CityRepository(db.cityDao())
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         if (ContextCompat.checkSelfPermission(
                 this,
@@ -59,25 +70,40 @@ class MainActivity : AppCompatActivity(), CallbackItem {
         startActivity(intent)
     }
 
-    fun getData() {
+    private fun getData() {
         weatherAPI.getData(lattitude, longtitude, 50, appid).enqueue(object : Callback<CitiesForecast> {
+            @SuppressLint("CheckResult")
             override fun onFailure(call: Call<CitiesForecast>?, t: Throwable?) {
                 Log.i("", t.toString())
                 Toast.makeText(this@MainActivity, getString(R.string.load_error), Toast.LENGTH_SHORT).show()
+                cityRepository.getCities().subscribeBy(onSuccess = {
+                    cityList = it
+                    appAdapter.submitList(it)
+                    //Log.i("", t.toString())
+                    Toast.makeText(this@MainActivity, getString(R.string.load_error), Toast.LENGTH_SHORT).show()
+                },
+                    onError = {})
             }
 
+            @SuppressLint("CheckResult")
             override fun onResponse(call: Call<CitiesForecast>?, response: Response<CitiesForecast>) {
                 cityList = response.body().list
-                appAdapter.submitList(cityList)
+                cityRepository.deleteAll().subscribeBy(onComplete = {
+                    response.body().list?.let {
+                        cityList?.let { it1 -> cityRepository.insertCities(it1) }
+                    }
+                    appAdapter.submitList(cityList)
+                },
+                    onError = {})
             }
         })
     }
 
-    fun requestPermissionWithRationale() {
+    private fun requestPermissionWithRationale() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
             val message = getString(R.string.no)
             Snackbar.make(container, message, Snackbar.LENGTH_LONG)
-                .setAction(getString(R.string.allow), { v -> requestPerms() })
+                .setAction(getString(R.string.allow)) { requestPerms() }
                 .show()
         } else {
             requestPerms()
@@ -92,9 +118,9 @@ class MainActivity : AppCompatActivity(), CallbackItem {
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        var allowed = false;
+        var allowed = false
         when (requestCode) {
-            123 -> allowed = grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED
+            123 -> allowed = grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
         }
         if (allowed) getCitiesWithGeo()
     }
