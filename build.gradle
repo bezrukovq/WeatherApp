@@ -25,6 +25,9 @@ allprojects {
 plugins {
     id("io.gitlab.arturbosch.detekt").version("[version]")
 }
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.0'
+}
 
 detekt {
     toolVersion = "[version]"
