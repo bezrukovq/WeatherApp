@@ -22,23 +22,6 @@ allprojects {
     }
 }
 
-plugins {
-    id("io.gitlab.arturbosch.detekt").version("[version]")
-}
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.0'
-}
-
-detekt {
-    toolVersion = "[version]"
-    input = files("src/main/kotlin")
-    filters = ".*/resources/.*,.*/build/.*"
-}
-
-task clean(type: Delete) {
-    delete rootProject.buildDir
-}
-
 
 detekt {
     version = "1.0.0-RC12"
@@ -55,4 +38,21 @@ detekt {
             destination = file("build/reports/detekt.html")
         }
     }
+}
+
+plugins {
+    id("io.gitlab.arturbosch.detekt").version("[version]")
+}
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.0'
+}
+
+detekt {
+    toolVersion = "[version]"
+    input = files("src/main/kotlin")
+    filters = ".*/resources/.*,.*/build/.*"
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
 }
