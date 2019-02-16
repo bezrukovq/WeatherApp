@@ -22,6 +22,16 @@ allprojects {
     }
 }
 
+plugins {
+    id("io.gitlab.arturbosch.detekt").version("[version]")
+}
+
+detekt {
+    toolVersion = "[version]"
+    input = files("src/main/kotlin")
+    filters = ".*/resources/.*,.*/build/.*"
+}
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
