@@ -15,6 +15,13 @@ buildscript {
     }
 }
 
+plugins {
+    id("io.gitlab.arturbosch.detekt").version("1.0.0-RC12")
+}
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.0'
+}
+
 allprojects {
     repositories {
         google()
@@ -24,31 +31,7 @@ allprojects {
 
 
 detekt {
-    version = "1.0.0-RC12"
-    input = files("${project.rootDir}/${project.getName()}/src/main/kotlin")
-    config = files("${project.rootDir}/{path_to_detekt}/detekt/detekt-config.yml")
-    filters = ".*test.*,.*/resources/.*,.*/tmp/.*"
-    reports {
-        xml {
-            enabled = true
-            destination = file("build/reports/detekt.xml")
-        }
-        html {
-            enabled = true
-            destination = file("build/reports/detekt.html")
-        }
-    }
-}
-
-plugins {
-    id("io.gitlab.arturbosch.detekt").version("[version]")
-}
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.0'
-}
-
-detekt {
-    toolVersion = "[version]"
+    toolVersion = "1.0.0-RC12"
     input = files("src/main/kotlin")
     filters = ".*/resources/.*,.*/build/.*"
 }
